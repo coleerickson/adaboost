@@ -13,7 +13,6 @@ class Adaboost:
             # Make new databas????
             D[-1]
             iter_classifier = self.weak_constructor(self.database)
-            jerk.meOff
 
 
     def predict(self,example):
