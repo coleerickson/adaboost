@@ -1,8 +1,4 @@
 from math import log
-from collections import Counter
-
-def print_weights(weights):
-    print(['{0:.4f}'.format(w) for w in weights])
 
 def log2(x):
     return log(x,2)
@@ -11,7 +7,6 @@ def inner(x,y):
     return sum(xi*yi for (xi,yi) in zip(x,y))
 
 def entropy(examples,weights):
-    # this is acting up!!!
     negative_examples = [example[-1] == 0 for example in examples]
     positive_examples = [example[-1] == 1 for example in examples]
 
@@ -36,13 +31,11 @@ def information_gain(database, weights,attribute):
 
     for attr_level in range(len(database.attributes[attribute])):
         filtered_indices = [index for index,ex in enumerate(database.data) if ex[attr_index] == attr_level]
-
         filtered_data = [database.data[i] for i in filtered_indices]
         filtered_weights = [weights[i] for i in filtered_indices]
 
         gain -= entropy(filtered_data,filtered_weights) * len(filtered_data) / len(database)
 
-#    print(attribute,gain)
     return gain
 
 
@@ -56,7 +49,6 @@ class DecisionStump:
 
         for attr_level in range(len(database.attributes[self.best_attribute])):
             filtered_indices = [index for index,ex in enumerate(database.data) if ex[attr_index] == attr_level]
-
             filtered_data = [database.data[i] for i in filtered_indices]
             filtered_weights = [weights[i] for i in filtered_indices]
 
@@ -66,7 +58,6 @@ class DecisionStump:
             self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights)/2))
 
         print(self.best_attribute)
-#        print(self.predictions)
 
 
     def predict(self,example):
