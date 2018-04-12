@@ -1,6 +1,9 @@
 from math import log
 from collections import Counter
 
+def print_weights(weights):
+    print(['{0:.4f}'.format(w) for w in weights])
+
 def log2(x):
     return log(x,2)
 
@@ -34,11 +37,11 @@ def information_gain(database, weights,attribute):
         filtered_data = [ex for ex in database.data if ex[attr_index] == attr_level]
         gain -= entropy(filtered_data,weights) * len(filtered_data) / len(database)
 
+#    print(attribute,gain)
     return gain
 
 
 class DecisionStump:
-
     def __init__(self,database,weights):
         self.best_attribute = max(database.ordered_attributes[:-1], key=lambda x: information_gain(database,weights,x))
 
@@ -48,13 +51,19 @@ class DecisionStump:
         attr_index = database.ordered_attributes.index(self.best_attribute)
 
         for attr_level in range(len(database.attributes[self.best_attribute])):
-            filtered_data = [ex for ex in database.data if ex[attr_index] == attr_level]
-            neg_examples = float(sum(example[-1] == 0 for example in database.data))
-            self.predictions[attr_level] = int(neg_examples < (len(database.data)/2))
+            filtered_indices = [index for index,ex in enumerate(database.data) if ex[attr_index] == attr_level]
+
+            filtered_data = [database.data[i] for i in filtered_indices]
+            filtered_weights = [weights[i] for i in filtered_indices]
+
+            neg_examples = [ex[-1] == 0 for ex in filtered_data]
+
+            weighted_neg = inner(neg_examples,filtered_weights)
+            self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights)/2))
+
+        print(self.best_attribute)
 
 
     def predict(self,example):
         attr_index = self.database.ordered_attributes.index(self.best_attribute)
-        klass = self.database.ordered_attributes[-1]
-
-        return self.database.attributes[klass][self.predictions[example[attr_index]]]
+        return self.predictions[example[attr_index]]
