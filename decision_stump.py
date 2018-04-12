@@ -1,5 +1,6 @@
 from math import log
 
+
 def log2(x):
     ''' Returns the base 2 logarithm of `x`. '''
     return log(x, 2)
@@ -35,7 +36,7 @@ def information_gain(database, weights, attribute):
     '''
     Computes the information gain of `database` by splitting on `attribute`. The examples in the database are reweighted by `weights`.
     '''
-    total_entropy = entropy(database.data,weights)
+    total_entropy = entropy(database.data, weights)
     gain = total_entropy
     attr_index = database.ordered_attributes.index(attribute)
 
@@ -61,23 +62,26 @@ class DecisionStump:
         self.database = database
 
         # Select the attribute that maximizes information gain on the training set
-        self.best_attribute = max(database.ordered_attributes[:-1], key=lambda x: information_gain(database, weights, x))
+        attributes = database.ordered_attributes[:-1]
 
-        # For each value of the best attribute, determine the majority class. In `self.predictions`, map that attribute value to the majority class.
+        def info_gain(x): return information_gain(database, weights, x)
+        self.best_attribute = max(attributes, key=info_gain)
+
+        # For each value of the best attribute, determine the majority class. In
+        # `self.predictions`, map that attribute value to the majority class.
         self.predictions = {}
         attr_index = database.ordered_attributes.index(self.best_attribute)
         for attr_level in range(len(database.attributes[self.best_attribute])):
-            filtered_indices = [index for index,ex in enumerate(database.data) if ex[attr_index] == attr_level]
+            filtered_indices = [index for index, ex in enumerate(database.data) if ex[attr_index] == attr_level]
             filtered_data = [database.data[i] for i in filtered_indices]
             filtered_weights = [weights[i] for i in filtered_indices]
 
             neg_examples = [ex[-1] == 0 for ex in filtered_data]
 
-            weighted_neg = inner(neg_examples,filtered_weights)
-            self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights)/2))
+            weighted_neg = inner(neg_examples, filtered_weights)
+            self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights) / 2))
 
         print(self.best_attribute)
-
 
     def predict(self, example):
         ''' Returns the predicted class of `example` based on the attribute that maximized information gain at training time. '''

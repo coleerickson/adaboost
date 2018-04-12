@@ -15,7 +15,7 @@ class Database:
         self.attributes = {}
         self.ordered_attributes = []
 
-    def read_data(self,file_name:str):
+    def read_data(self, file_name: str):
         '''Parses the passed ARFF file into a usable object'''
         # Read lines from file
         with open(file_name) as f:
@@ -81,7 +81,6 @@ class Database:
         train_set = [d for i, d in enumerate(
             self.data) if i not in test_indices]
         test_set = [d for i, d in enumerate(self.data) if i in test_indices]
-
 
         train = Database()
         train.attributes = self.attributes
@@ -149,11 +148,11 @@ class Database:
 #        self.data = [dict(zip(self.ordered_attributes, sl))
 #                     for sl in split_clean_lines]
 
-        self.data = [[self.get_attr_index(i,v) for i,v in enumerate(sl)]
-                    for sl in split_clean_lines]
+        self.data = [[self.get_attr_index(i, v) for i, v in enumerate(sl)]
+                     for sl in split_clean_lines]
 #        self.validate_data()
 
-    def get_attr_index(self,index,val):
+    def get_attr_index(self, index, val):
         if val == '?':
             return None
         else:
@@ -191,7 +190,6 @@ if __name__ == "__main__":
     d.read_data('./NominalData/weather.nominal.arff')
     assert d.name == 'weather.symbolic'
     print(d)
-
 
     s = Database()
     s.read_data('./NominalData/soybean.arff')
