@@ -81,8 +81,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Adaboost')
 
     parser = ArgumentParser()
-    parser.add_argument('-f', '--file', help='.arff file name')
-    parser.add_argument('-i', '--iters', type=int, help='number of classifiers to train')
+    parser.add_argument('-f', '--file', help='.arff file name', required=True)
+    parser.add_argument('-i', '--iters', type=int, help='number of classifiers to train', required=True)
 
     args = parser.parse_args()
 
