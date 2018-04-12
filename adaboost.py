@@ -69,15 +69,19 @@ class Adaboost:
 
         each_pred_time_sequence = [[p[i] for p in all_preds] for i in range(len(self.database.data))]
 
-        for i,ex in enumerate(self.database.data):
-            print(each_pred_time_sequence[i], ex[-1])
-            print(int(sum(each_pred_time_sequence[i]) > (len(each_pred_time_sequence[i])/2)) == ex[-1])
-        print(self.alphas)
+#        for i,ex in enumerate(self.database.data):
+#            print(each_pred_time_sequence[i], ex[-1])
+#            print(int(sum(each_pred_time_sequence[i]) > (len(each_pred_time_sequence[i])/2)) == ex[-1])
+#        print(self.alphas)
 
 
 
     def predict(self,example):
-        return sign(sum(alpha_t * ht.predict(example) for alpha_t,ht in zip(self.alphas, self.classifiers)))
+#        signify = lambda x: -1 if x == 0 else 1
+#        predictions = [designify(ht.predict(example)) for ht in self.classifiers]
+#        print(predictions)
+
+        return sign(sum(alpha_t * sign(ht.predict(example)) for alpha_t,ht in zip(self.alphas, self.classifiers)))
         # iz thiz right ???
 
 
