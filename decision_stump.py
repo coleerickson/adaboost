@@ -62,6 +62,7 @@ class DecisionStump:
             self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights)/2))
 
         print(self.best_attribute)
+        print(self.predictions)
 
 
     def predict(self,example):

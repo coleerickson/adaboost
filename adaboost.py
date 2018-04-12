@@ -31,6 +31,9 @@ class Adaboost:
 
     def _learn(self):
 
+        all_preds = []
+
+
         for t in range(T):
 #            print_weights(self.D)
 
@@ -39,9 +42,11 @@ class Adaboost:
             wrong_preds = [ex[-1] != pred for ex,pred in zip(self.database.data, preds)]
 
             for i in range(len(self.D)):
-                print(self.D[i], preds[i], wrong_preds[i])
+                print('{0:.3f}'.format(self.D[i]), preds[i], wrong_preds[i])
 #            print(list(zip(print_weights(self.D),preds,wrong_preds)))
             et = inner(self.D,wrong_preds) / sum(self.D)
+
+            print(et)
 
             if et == 0:
                 alpha_t = 100
@@ -56,15 +61,24 @@ class Adaboost:
 
             self.alphas[t] = alpha_t
             self.classifiers[t] = ht
+            all_preds.append(preds)
 
             print('iter over')
             print()
             print()
 
+        each_pred_time_sequence = [[p[i] for p in all_preds] for i in range(len(self.database.data))]
+
+        for i,ex in enumerate(self.database.data):
+            print(each_pred_time_sequence[i], ex[-1])
+            print(int(sum(each_pred_time_sequence[i]) > (len(each_pred_time_sequence[i])/2)) == ex[-1])
+        print(self.alphas)
+
 
 
     def predict(self,example):
         return sign(sum(alpha_t * ht.predict(example) for alpha_t,ht in zip(self.alphas, self.classifiers)))
+        # iz thiz right ???
 
 
 if __name__ == '__main__':
