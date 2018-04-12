@@ -4,15 +4,30 @@ from collections import Counter
 def log2(x):
     return log(x,2)
 
+def inner(x,y):
+    return sum(xi*yi for (xi,yi) in zip(x,y))
+
 def entropy(database,weights):
     #TODO: use weights
 
-    neg_examples = float(sum(example[-1] == 0 for example in database))
+
+    negative_examples = [example[-1] == 0 for example in database]
+    positive_examples = [example[-1] == 1 for example in database]
+
+    weighted_neg = inner(negative_examples,weights)
+    weighted_pos = inner(positive_examples,weights)
+
+    total_weights = sum(weights)
+
+    neg_ratio = float(weighted_neg / total_weights)
+    pos_ratio = 1 - neg_ratio
+
+
+#    neg_examples = float(sum(example[-1] == 0 for example in database))
     # note we are assuming binary classification
 
-    #TODO: weights
-    neg_ratio = neg_examples / len(database)
-    pos_ratio = 1 - neg_ratio
+#    neg_ratio = neg_examples / len(database)
+#    pos_ratio = 1 - neg_ratio
 
     return -1 * neg_ratio * log2(neg_ratio) - pos_ratio * log2(pos_ratio)
 
