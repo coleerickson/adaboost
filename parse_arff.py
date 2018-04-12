@@ -7,7 +7,7 @@ from math import ceil
 
 
 class Database:
-'''Represents the data in an ARFF file.'''
+    '''Represents the data in an ARFF file.'''
 
     def __init__(self):
         '''Constructs an empty database. To populate it, use the `read_data` method.'''
