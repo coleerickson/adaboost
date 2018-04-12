@@ -39,9 +39,9 @@ class Adaboost:
             wrong_preds = [ex[-1] != pred for ex,pred in zip(self.database.data, preds)]
 
             et = inner(self.D,wrong_preds) / sum(self.D)
-#            print(et)
+
             if et == 0:
-                alpha_t = 100
+                alpha_t = 10
             else:
                 alpha_t = log(((1-et)/et)) / 2
 
@@ -52,24 +52,11 @@ class Adaboost:
 
             self.alphas[t] = alpha_t
             self.classifiers[t] = ht
-#            all_preds.append(preds)
-
-#            print('iter over')
-#            print()
-#            print()
-
-#        each_pred_time_sequence = [[p[i] for p in all_preds] for i in range(len(self.database.data))]
-
-#        for i,ex in enumerate(self.database.data):
-#            print(each_pred_time_sequence[i], ex[-1])
-#            print(int(sum(each_pred_time_sequence[i]) > (len(each_pred_time_sequence[i])/2)) == ex[-1])
-#        print(self.alphas)
 
 
 
     def predict(self,example):
         return sign(sum(alpha_t * resign(ht.predict(example)) for alpha_t,ht in zip(self.alphas, self.classifiers)))
-        # iz thiz right ???
 
 
 if __name__ == '__main__':
@@ -91,5 +78,4 @@ if __name__ == '__main__':
 
     preds = [a.predict(ex) for ex in db.data]
     results = [sign(ex[-1]) == p for ex,p in zip(db.data, preds)]
-    print(preds)
     print(sum(results) / len(results))

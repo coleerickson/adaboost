@@ -7,6 +7,8 @@ from math import ceil
 
 
 class Database:
+'''Represents the data in an ARFF file.'''
+
     def __init__(self):
         '''Constructs an empty database. To populate it, use the `read_data` method.'''
         self.data = []
@@ -15,7 +17,6 @@ class Database:
 
     def read_data(self,file_name:str):
         '''Parses the passed ARFF file into a usable object'''
-
         # Read lines from file
         with open(file_name) as f:
             lines = f.readlines()
