@@ -9,6 +9,7 @@ def log2(x):
     return log(x,2)
 
 sign = lambda x: 1 if x > 0 else -1
+resign = lambda x: -1 if x == 0 else 1
 
 def print_weights(weights):
     return(['{0:.4f}'.format(w) for w in weights])
@@ -22,7 +23,6 @@ class Adaboost:
         self.database = database
 
         m = len(database.data)
-#        D = [ [1/m] * m ]
         self.D = [1/m] * m
         self.alphas = [0] * T
         self.classifiers = [None] * T
@@ -30,44 +30,35 @@ class Adaboost:
         self._learn()
 
     def _learn(self):
-
-        all_preds = []
-
-
+#        all_preds = []
         for t in range(T):
-#            print_weights(self.D)
+#            print(print_weights(self.D))
 
             ht = self.weak_constructor(self.database,self.D)
             preds = [ht.predict(example) for example in self.database.data]
             wrong_preds = [ex[-1] != pred for ex,pred in zip(self.database.data, preds)]
 
-            for i in range(len(self.D)):
-                print('{0:.3f}'.format(self.D[i]), preds[i], wrong_preds[i])
-#            print(list(zip(print_weights(self.D),preds,wrong_preds)))
             et = inner(self.D,wrong_preds) / sum(self.D)
-
-            print(et)
-
+#            print(et)
             if et == 0:
                 alpha_t = 100
             else:
                 alpha_t = log(((1-et)/et)) / 2
 
             signify = lambda x: 1 if x else -1
-
             self.D = [di * exp(alpha_t * signify(ex[-1] != pred)) for di,ex,pred in zip(self.D,self.database.data,preds)]
             z_t = sum(self.D) # normalization factor, so we sum to 1 (and are a distribution)
             self.D = [di / z_t for di in self.D]
 
             self.alphas[t] = alpha_t
             self.classifiers[t] = ht
-            all_preds.append(preds)
+#            all_preds.append(preds)
 
-            print('iter over')
-            print()
-            print()
+#            print('iter over')
+#            print()
+#            print()
 
-        each_pred_time_sequence = [[p[i] for p in all_preds] for i in range(len(self.database.data))]
+#        each_pred_time_sequence = [[p[i] for p in all_preds] for i in range(len(self.database.data))]
 
 #        for i,ex in enumerate(self.database.data):
 #            print(each_pred_time_sequence[i], ex[-1])
@@ -77,11 +68,7 @@ class Adaboost:
 
 
     def predict(self,example):
-#        signify = lambda x: -1 if x == 0 else 1
-#        predictions = [designify(ht.predict(example)) for ht in self.classifiers]
-#        print(predictions)
-
-        return sign(sum(alpha_t * sign(ht.predict(example)) for alpha_t,ht in zip(self.alphas, self.classifiers)))
+        return sign(sum(alpha_t * resign(ht.predict(example)) for alpha_t,ht in zip(self.alphas, self.classifiers)))
         # iz thiz right ???
 
 
@@ -100,18 +87,9 @@ if __name__ == '__main__':
     db = Database()
     db.read_data(file_name)
 
-
     a = Adaboost(DecisionStump,db,T)
 
     preds = [a.predict(ex) for ex in db.data]
-
     results = [sign(ex[-1]) == p for ex,p in zip(db.data, preds)]
-
-    print(results)
-
-
-#    for ex in db.data:
-#        p = a.predict(ex)
-#        print(ex)
-#        print(p)
-#        print()
+    print(preds)
+    print(sum(results) / len(results))
