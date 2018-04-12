@@ -7,8 +7,8 @@ from math import ceil
 
 
 class Database:
-
     def __init__(self):
+        '''Constructs an empty database. To populate it, use the `read_data` method.'''
         self.data = []
         self.attributes = {}
         self.ordered_attributes = []

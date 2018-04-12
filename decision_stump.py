@@ -1,13 +1,16 @@
 from math import log
 from collections import Counter
 
+def print_weights(weights):
+    print(['{0:.4f}'.format(w) for w in weights])
+
 def log2(x):
     ''' Returns the base 2 logarithm of `x`. '''
     return log(x, 2)
 
 
 def inner(x, y):
-    ''' Returns he inner product of vectors `x` and `y`, where `x` and `y` are represented as lists. '''
+    ''' Returns the inner product (dot product) of vectors `x` and `y`, where `x` and `y` are represented as lists. '''
     return sum(xi * yi for (xi, yi) in zip(x, y))
 
 
@@ -42,9 +45,14 @@ def information_gain(database, weights, attribute):
 
     # Computes split entropy
     for attr_level in range(len(database.attributes[attribute])):
-        filtered_data = [ex for ex in database.data if ex[attr_index] == attr_level]
-        gain -= entropy(filtered_data, weights) * len(filtered_data) / len(database)
+        filtered_indices = [index for index, ex in enumerate(database.data) if ex[attr_index] == attr_level]
 
+        filtered_data = [database.data[i] for i in filtered_indices]
+        filtered_weights = [weights[i] for i in filtered_indices]
+
+        gain -= entropy(filtered_data, filtered_weights) * len(filtered_data) / len(database)
+
+#    print(attribute,gain)
     return gain
 
 
@@ -64,14 +72,21 @@ class DecisionStump:
         self.predictions = {}
         attr_index = database.ordered_attributes.index(self.best_attribute)
         for attr_level in range(len(database.attributes[self.best_attribute])):
-            filtered_data = [ex for ex in database.data if ex[attr_index] == attr_level]
-            neg_examples = float(sum(example[-1] == 0 for example in database.data))
-            self.predictions[attr_level] = int(neg_examples < (len(database.data) / 2.0))
+            filtered_indices = [index for index,ex in enumerate(database.data) if ex[attr_index] == attr_level]
+
+            filtered_data = [database.data[i] for i in filtered_indices]
+            filtered_weights = [weights[i] for i in filtered_indices]
+
+            neg_examples = [ex[-1] == 0 for ex in filtered_data]
+
+            weighted_neg = inner(neg_examples,filtered_weights)
+            self.predictions[attr_level] = int(weighted_neg < (sum(filtered_weights)/2))
+
+        print(self.best_attribute)
+#        print(self.predictions)
 
 
     def predict(self, example):
         ''' Returns the predicted class of `example` based on the attribute that maximized information gain at training time. '''
         attr_index = self.database.ordered_attributes.index(self.best_attribute)
-        klass = self.database.ordered_attributes[-1]
-
-        return self.database.attributes[klass][self.predictions[example[attr_index]]]
+        return self.predictions[example[attr_index]]
